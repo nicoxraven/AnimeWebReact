@@ -12,34 +12,6 @@ import { toast } from 'sonner';
 import { users as seedUsers } from './mock-data';
 import { supabase } from './supabase-client';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
@@ -56,58 +28,73 @@ export function AppProvider({ children }) {
 
   const login = useCallback(
     async (email) => {
-      if (email) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('email', email)
-          .maybeSingle();
-        if (data) {
-          setCurrentUser(data);
-          setAuthModal(null);
-          toast.success(`Welcome back, ${data.name.split(' ')[0]}!`);
-          return;
+      try {
+        if (email) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('email', email)
+            .maybeSingle();
+          if (!error && data) {
+            setCurrentUser(data);
+            setAuthModal(null);
+            toast.success(`Welcome back, ${data.name.split(' ')[0]}!`);
+            return;
+          }
         }
+        const found = seedUsers.find((u) => u.email === email) || seedUsers[2];
+        setCurrentUser(found);
+        setAuthModal(null);
+        toast.success(`Welcome back, ${found.name.split(' ')[0]}!`);
+      } catch (err) {
+        const found = seedUsers.find((u) => u.email === email) || seedUsers[2];
+        setCurrentUser(found);
+        setAuthModal(null);
+        toast.success(`Welcome back, ${found.name.split(' ')[0]}!`);
       }
-      const found = users[2];
-      setCurrentUser(found);
-      setAuthModal(null);
-      toast.success(`Welcome back, ${found.name.split(' ')[0]}!`);
     },
-    [users]
+    []
   );
 
   const signup = useCallback(async (name, email) => {
     const handle = (name || 'new_otaku').toLowerCase().replace(/\s+/g, '_');
-    const { data } = await supabase
-      .from('profiles')
-      .insert({
-        name: name || 'New Otaku',
-        handle,
-        email: email || 'new@kamistream.io',
-        phone: '—',
-        avatar: '/anime/cover-mecha.png',
-        role: 'free',
-        subscription: 'inactive',
-        joined: 'Just now',
-      })
-      .select()
-      .single();
-    const newUser = data || {
+    const fallbackUser = {
       id: `u${Date.now()}`,
       name: name || 'New Otaku',
       handle,
-      email,
+      email: email || 'new@kamistream.io',
       phone: '—',
       avatar: '/anime/cover-mecha.png',
       role: 'free',
       subscription: 'inactive',
       joined: 'Just now',
     };
-    setUsers((prev) => [newUser, ...prev]);
-    setCurrentUser(newUser);
-    setAuthModal(null);
-    toast.success('Account created. Welcome to KamiStream!');
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert({
+          name: name || 'New Otaku',
+          handle,
+          email: email || `new_${Date.now()}@kamistream.io`,
+          phone: '—',
+          avatar: '/anime/cover-mecha.png',
+          role: 'free',
+          subscription: 'inactive',
+          joined: 'Just now',
+        })
+        .select()
+        .single();
+      const newUser = (!error && data) ? data : fallbackUser;
+      setUsers((prev) => [newUser, ...prev]);
+      setCurrentUser(newUser);
+      setAuthModal(null);
+      toast.success('Account created. Welcome to KamiStream!');
+    } catch (err) {
+      setUsers((prev) => [fallbackUser, ...prev]);
+      setCurrentUser(fallbackUser);
+      setAuthModal(null);
+      toast.success('Account created. Welcome to KamiStream!');
+    }
   }, []);
 
   const logout = useCallback(() => {
@@ -193,7 +180,6 @@ export function AppProvider({ children }) {
   const vote = useCallback((id, dir) => {
     setVotes((prev) => {
       const current = prev[id] ?? 0;
-      // toggle behavior: clicking same direction cancels
       const next = current === dir ? 0 : dir;
       return { ...prev, [id]: next };
     });

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BookOpen, Film, Loader as Loader2, Newspaper, PenLine, Plus, Sparkles, Trash2, Wand as Wand2 } from 'lucide-react';
+import { BookOpen, Film, Loader as Loader2, Newspaper, PenLine, Plus, Sparkles, Trash2, Tv, Wand as Wand2 } from 'lucide-react';
 import { useApp } from '@/lib/app-context';
 import { supabase } from '@/lib/supabase-client';
 import { cn } from '@/lib/utils';
@@ -14,6 +14,7 @@ import { Switch } from '@/components/ui/switch';
 
 const CONTENT_TYPES = [
   { k: 'movie', label: 'Movie', Icon: Film },
+  { k: 'series', label: 'Series', Icon: Tv },
   { k: 'manga', label: 'Manga', Icon: BookOpen },
   { k: 'news', label: 'News', Icon: Newspaper },
 ];

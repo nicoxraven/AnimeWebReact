@@ -15,31 +15,37 @@ export function WatchView({ item }) {
   const { canAccessPremium, openKPay, currentUser, openAuth } = useApp();
   const locked = item.premium && !canAccessPremium;
 
-  const related = media.
-  filter((m) => m.type === item.type && m.id !== item.id).
-  slice(0, 4);
+  const related = media
+    .filter((m) => m.type === item.type && m.id !== item.id)
+    .slice(0, 5);
+
+  const typeLabel =
+    item.type === 'movie' ? 'movies' :
+    item.type === 'series' ? 'series' : 'manga';
+
+  const lengthLabel =
+    item.type === 'movie' ? item.duration :
+    item.type === 'series' ? `${item.episodes} episodes` :
+    `${item.chapters} chapters`;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       <Link
         href="/"
         className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">
-        
         <ArrowLeft className="size-4" />
         Back to browse
       </Link>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-        {/* Main media column */}
         <div className="space-y-5">
-          {locked ?
-          <LockedPanel
-            item={item}
-            onUnlock={() => currentUser ? openKPay() : openAuth('signin')} /> :
-
-
-          <MediaViewer item={item} />
-          }
+          {locked ? (
+            <LockedPanel
+              item={item}
+              onUnlock={() => (currentUser ? openKPay() : openAuth('signin'))} />
+          ) : (
+            <MediaViewer item={item} />
+          )}
 
           <div>
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -63,24 +69,19 @@ export function WatchView({ item }) {
                   <span>·</span>
                   <span>{item.studio}</span>
                   <span>·</span>
-                  <span>
-                    {item.type === 'movie' ?
-                    item.duration :
-                    `${item.chapters} chapters`}
-                  </span>
+                  <span>{lengthLabel}</span>
                 </div>
               </div>
             </div>
 
             <div className="mt-3 flex flex-wrap gap-2">
-              {item.genres.map((g) =>
-              <span
-                key={g}
-                className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
-                
+              {item.genres.map((g) => (
+                <span
+                  key={g}
+                  className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
                   {g}
                 </span>
-              )}
+              ))}
             </div>
 
             <p className="mt-4 max-w-2xl leading-relaxed text-foreground/90">
@@ -88,43 +89,34 @@ export function WatchView({ item }) {
             </p>
           </div>
 
-          {/* Related */}
           <div className="pt-2">
             <h2 className="mb-3 font-display text-lg font-semibold">
-              More {item.type === 'movie' ? 'movies' : 'manga'}
+              More {typeLabel}
             </h2>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {related.map((m) =>
-              <MediaCard key={m.id} item={m} />
-              )}
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+              {related.map((m) => (
+                <MediaCard key={m.id} item={m} />
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Discussion column */}
         <aside className="lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)]">
           <div className="h-full overflow-hidden rounded-xl border border-border bg-card">
             <DiscussionPanel />
           </div>
         </aside>
       </div>
-    </div>);
-
+    </div>
+  );
 }
 
-function LockedPanel({
-  item,
-  onUnlock
-
-
-
-}) {
+function LockedPanel({ item, onUnlock }) {
   return (
     <div className="relative overflow-hidden rounded-xl border border-border">
       <div
         className="aspect-video bg-cover bg-center blur-xl saturate-150"
         style={{ backgroundImage: `url(${item.cover})` }} />
-      
       <div className="absolute inset-0 grid place-items-center bg-background/70 backdrop-blur-sm">
         <div className="max-w-sm px-6 text-center">
           <span className="mx-auto mb-4 grid size-14 place-items-center rounded-full bg-primary/15 text-primary ring-1 ring-primary/30">
@@ -133,7 +125,7 @@ function LockedPanel({
           <h2 className="font-display text-xl font-bold">Premium title</h2>
           <p className="mt-1.5 text-sm text-muted-foreground text-pretty">
             {item.title} is part of KamiStream Premium. Unlock the full library
-            of movies, manga, and subscriber-only extras.
+            of movies, series, manga, and subscriber-only extras.
           </p>
           <Button onClick={onUnlock} className="mt-4 gap-1.5">
             <Sparkles className="size-4" />
@@ -141,6 +133,6 @@ function LockedPanel({
           </Button>
         </div>
       </div>
-    </div>);
-
+    </div>
+  );
 }

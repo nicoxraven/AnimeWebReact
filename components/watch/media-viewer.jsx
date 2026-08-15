@@ -13,7 +13,8 @@ import {
   SkipForward,
   Volume2,
   BookOpen,
-  List } from
+  List,
+  Tv } from
 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -21,6 +22,7 @@ import { Button } from '@/components/ui/button';
 
 export function MediaViewer({ item }) {
   if (item.type === 'movie') return <MoviePlayer item={item} />;
+  if (item.type === 'series') return <SeriesPlayer item={item} />;
   return <MangaReader item={item} />;
 }
 
@@ -98,6 +100,125 @@ function MoviePlayer({ item }) {
   );
 }
 
+function SeriesPlayer({ item }) {
+  const total = item.episodes ?? 1;
+  const [episode, setEpisode] = useState(1);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(12);
+  const [showEpisodes, setShowEpisodes] = useState(false);
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className="relative aspect-video">
+        <Image
+          src={item.cover || '/placeholder.svg'}
+          alt={`${item.title} — Episode ${episode}`}
+          fill
+          sizes="(max-width: 1024px) 100vw, 66vw"
+          className="object-cover"
+          priority />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-background/40" />
+
+        <button
+          onClick={() => setPlaying((p) => !p)}
+          className="absolute inset-0 grid place-items-center"
+          aria-label={playing ? 'Pause' : 'Play'}>
+          <span
+            className={cn(
+              'grid size-16 place-items-center rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40 transition-transform',
+              playing ? 'scale-90 opacity-0' : 'scale-100 hover:scale-110'
+            )}>
+            <Play className="size-7 fill-current" />
+          </span>
+        </button>
+
+        <div className="absolute left-4 top-4">
+          <span className="rounded-md bg-background/80 px-2.5 py-1 text-xs font-medium backdrop-blur">
+            Episode {episode}
+          </span>
+        </div>
+
+        <div className="absolute inset-x-0 bottom-0 space-y-2 p-4">
+          <div className="group h-1.5 w-full cursor-pointer rounded-full bg-white/20">
+            <div
+              className="relative h-full rounded-full bg-primary"
+              style={{ width: `${progress}%` }}>
+              <span className="absolute -right-1.5 top-1/2 size-3.5 -translate-y-1/2 rounded-full bg-primary opacity-0 shadow transition-opacity group-hover:opacity-100" />
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-white">
+            <button onClick={() => setPlaying((p) => !p)} aria-label="Play/pause">
+              {playing ? <Pause className="size-5" /> : <Play className="size-5 fill-current" />}
+            </button>
+            <button
+              aria-label="Previous episode"
+              onClick={() => {
+                if (episode > 1) { setEpisode((e) => e - 1); setProgress(0); }
+              }}
+              disabled={episode <= 1}>
+              <SkipBack className="size-4" />
+            </button>
+            <button
+              aria-label="Next episode"
+              onClick={() => {
+                if (episode < total) { setEpisode((e) => e + 1); setProgress(0); }
+              }}
+              disabled={episode >= total}>
+              <SkipForward className="size-4" />
+            </button>
+            <Volume2 className="size-4" />
+            <span className="text-xs tabular-nums text-white/80">
+              Ep {episode}/{total}
+            </span>
+            <div className="ml-auto flex items-center gap-3">
+              <button
+                onClick={() => setShowEpisodes((s) => !s)}
+                aria-label="Episode list">
+                <List className="size-4" />
+              </button>
+              <Settings className="size-4" />
+              <Maximize2 className="size-4" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showEpisodes && (
+        <div className="max-h-48 overflow-y-auto border-t border-border p-3">
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 md:grid-cols-8">
+            {Array.from({ length: total }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => { setEpisode(i + 1); setProgress(0); setShowEpisodes(false); }}
+                className={cn(
+                  'grid aspect-video place-items-center rounded-lg border text-sm font-medium transition-colors',
+                  i + 1 === episode
+                    ? 'border-primary bg-primary/15 text-primary'
+                    : 'border-border bg-secondary text-muted-foreground hover:text-foreground'
+                )}>
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-wrap items-center gap-3 border-t border-border p-4">
+        <span className="rounded-md bg-secondary px-2 py-1 text-xs font-medium">
+          HD 1080p
+        </span>
+        <span className="rounded-md bg-secondary px-2 py-1 text-xs font-medium">
+          Sub · Dub
+        </span>
+        <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Tv className="size-3.5" />
+          {item.studio} · {item.year} · {total} episodes
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function MangaReader({ item }) {
   const total = item.chapters ?? 1;
   const [chapter, setChapter] = useState(1);
@@ -131,10 +252,7 @@ function MangaReader({ item }) {
             variant="secondary"
             size="sm"
             onClick={() => {
-              if (chapter > 1) {
-                setChapter((c) => c - 1);
-                setPage(1);
-              }
+              if (chapter > 1) { setChapter((c) => c - 1); setPage(1); }
             }}
             disabled={chapter <= 1}>
             <ChevronLeft className="size-4" />
@@ -148,10 +266,7 @@ function MangaReader({ item }) {
             variant="secondary"
             size="sm"
             onClick={() => {
-              if (chapter < total) {
-                setChapter((c) => c + 1);
-                setPage(1);
-              }
+              if (chapter < total) { setChapter((c) => c + 1); setPage(1); }
             }}
             disabled={chapter >= total}>
             Next ch
