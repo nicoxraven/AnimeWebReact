@@ -50,48 +50,48 @@
 }
 
 /*
-  Anime cinematic dark theme.
-  Palette (5 colors):
-  - background: deep violet-black
-  - card/muted: raised violet-charcoal neutrals
-  - foreground: soft white
-  - primary: vivid magenta (brand accent)
-  - accent: electric cyan (secondary accent)
+  Anime cinematic dark theme — "Aurora Night"
+  Palette:
+  - background: deep teal-black with subtle warmth
+  - card/muted: raised teal-charcoal neutrals
+  - foreground: soft warm white
+  - primary: vivid coral-pink (brand accent)
+  - accent: electric teal (secondary accent)
 */
 :root {
   color-scheme: dark;
-  --background: oklch(0.14 0.022 285);
-  --foreground: oklch(0.97 0.006 300);
-  --card: oklch(0.185 0.026 286);
-  --card-foreground: oklch(0.97 0.006 300);
-  --popover: oklch(0.185 0.026 286);
-  --popover-foreground: oklch(0.97 0.006 300);
-  --primary: oklch(0.67 0.248 351);
-  --primary-foreground: oklch(0.99 0.005 300);
-  --secondary: oklch(0.26 0.03 286);
-  --secondary-foreground: oklch(0.97 0.006 300);
-  --muted: oklch(0.24 0.028 286);
-  --muted-foreground: oklch(0.7 0.03 290);
-  --accent: oklch(0.75 0.16 205);
-  --accent-foreground: oklch(0.16 0.03 240);
+  --background: oklch(0.15 0.025 200);
+  --foreground: oklch(0.97 0.008 80);
+  --card: oklch(0.2 0.03 200);
+  --card-foreground: oklch(0.97 0.008 80);
+  --popover: oklch(0.2 0.03 200);
+  --popover-foreground: oklch(0.97 0.008 80);
+  --primary: oklch(0.7 0.22 25);
+  --primary-foreground: oklch(0.99 0.005 80);
+  --secondary: oklch(0.27 0.035 200);
+  --secondary-foreground: oklch(0.97 0.008 80);
+  --muted: oklch(0.25 0.032 200);
+  --muted-foreground: oklch(0.72 0.03 195);
+  --accent: oklch(0.78 0.15 195);
+  --accent-foreground: oklch(0.16 0.03 200);
   --destructive: oklch(0.63 0.24 25);
   --border: oklch(1 0 0 / 9%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.67 0.248 351);
-  --chart-1: oklch(0.67 0.248 351);
-  --chart-2: oklch(0.75 0.16 205);
-  --chart-3: oklch(0.7 0.2 300);
-  --chart-4: oklch(0.78 0.17 85);
-  --chart-5: oklch(0.6 0.22 25);
+  --ring: oklch(0.7 0.22 25);
+  --chart-1: oklch(0.7 0.22 25);
+  --chart-2: oklch(0.78 0.15 195);
+  --chart-3: oklch(0.72 0.18 145);
+  --chart-4: oklch(0.8 0.16 85);
+  --chart-5: oklch(0.65 0.2 305);
   --radius: 0.75rem;
-  --sidebar: oklch(0.165 0.024 286);
-  --sidebar-foreground: oklch(0.97 0.006 300);
-  --sidebar-primary: oklch(0.67 0.248 351);
-  --sidebar-primary-foreground: oklch(0.99 0.005 300);
-  --sidebar-accent: oklch(0.26 0.03 286);
-  --sidebar-accent-foreground: oklch(0.97 0.006 300);
+  --sidebar: oklch(0.17 0.028 200);
+  --sidebar-foreground: oklch(0.97 0.008 80);
+  --sidebar-primary: oklch(0.7 0.22 25);
+  --sidebar-primary-foreground: oklch(0.99 0.005 80);
+  --sidebar-accent: oklch(0.27 0.035 200);
+  --sidebar-accent-foreground: oklch(0.97 0.008 80);
   --sidebar-border: oklch(1 0 0 / 9%);
-  --sidebar-ring: oklch(0.67 0.248 351);
+  --sidebar-ring: oklch(0.7 0.22 25);
 }
 
 @layer base {
@@ -106,11 +106,17 @@
 
 @layer utilities {
   .text-glow-primary {
-    text-shadow: 0 0 24px oklch(0.67 0.248 351 / 0.55);
+    text-shadow: 0 0 24px oklch(0.7 0.22 25 / 0.55);
   }
   .bg-grid {
     background-image: radial-gradient(oklch(1 0 0 / 0.05) 1px, transparent 1px);
     background-size: 22px 22px;
+  }
+  .bg-aurora {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 20% 0%, oklch(0.7 0.22 25 / 0.12), transparent),
+      radial-gradient(ellipse 60% 50% at 80% 100%, oklch(0.78 0.15 195 / 0.1), transparent),
+      radial-gradient(ellipse 50% 40% at 50% 50%, oklch(0.72 0.18 145 / 0.06), transparent);
   }
   .cover-flow-perspective {
     perspective: 1600px;

@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   LogOut,
-  MessagesSquare,
   Sparkles,
   TvMinimalPlay,
   Upload } from
@@ -27,9 +26,7 @@ import { AuthModal } from '@/components/modals/auth-modal';
 import { KPayModal } from '@/components/modals/kpay-modal';
 
 const NAV = [
-{ href: '/', label: 'Home', Icon: TvMinimalPlay },
-{ href: '/forum', label: 'Community', Icon: MessagesSquare }];
-
+{ href: '/', label: 'Home', Icon: TvMinimalPlay }];
 
 export function AppShell({ children }) {
   const pathname = usePathname();
@@ -66,11 +63,9 @@ export function AppShell({ children }) {
                     'bg-secondary text-foreground' :
                     'text-muted-foreground hover:text-foreground'
                   )}>
-                  
                   <Icon className="size-4" />
                   {label}
                 </Link>);
-
             })}
             {isCreator &&
             <Link
@@ -81,10 +76,9 @@ export function AppShell({ children }) {
                 'bg-secondary text-foreground' :
                 'text-muted-foreground hover:text-foreground'
               )}>
-              
-                <Upload className="size-4" />
-                Studio
-              </Link>
+              <Upload className="size-4" />
+              Studio
+            </Link>
             }
             {isAdmin &&
             <Link
@@ -95,10 +89,9 @@ export function AppShell({ children }) {
                 'bg-secondary text-foreground' :
                 'text-muted-foreground hover:text-foreground'
               )}>
-              
-                <LayoutDashboard className="size-4" />
-                Admin
-              </Link>
+              <LayoutDashboard className="size-4" />
+              Admin
+            </Link>
             }
           </nav>
 
@@ -108,10 +101,9 @@ export function AppShell({ children }) {
               onClick={openKPay}
               size="sm"
               className="hidden gap-1.5 sm:flex">
-              
-                <Sparkles className="size-4" />
-                Go Premium
-              </Button>
+              <Sparkles className="size-4" />
+              Go Premium
+            </Button>
             }
 
             {currentUser ?
@@ -122,7 +114,6 @@ export function AppShell({ children }) {
                       <AvatarImage
                       src={currentUser.avatar || '/placeholder.svg'}
                       alt={currentUser.name} />
-                    
                       <AvatarFallback>{currentUser.name[0]}</AvatarFallback>
                     </Avatar>
                     <span className="hidden text-sm font-medium sm:inline">
@@ -176,11 +167,10 @@ export function AppShell({ children }) {
                 variant="ghost"
                 size="sm"
                 onClick={() => openAuth('signin')}>
-                
                   Sign in
                 </Button>
                 <Button size="sm" onClick={() => openAuth('signup')}>
-                  Join
+                  Sign up
                 </Button>
               </>
             }
@@ -206,5 +196,4 @@ export function AppShell({ children }) {
       <AuthModal />
       <KPayModal />
     </div>);
-
 }

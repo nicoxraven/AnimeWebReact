@@ -10,6 +10,7 @@ import {
 'react';
 import { toast } from 'sonner';
 import { users as seedUsers } from './mock-data';
+import { supabase } from './supabase-client';
 
 
 
@@ -54,9 +55,21 @@ export function AppProvider({ children }) {
   const closeAuth = useCallback(() => setAuthModal(null), []);
 
   const login = useCallback(
-    (email) => {
-      const found =
-      email && users.find((u) => u.email === email) || users[2];
+    async (email) => {
+      if (email) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('email', email)
+          .maybeSingle();
+        if (data) {
+          setCurrentUser(data);
+          setAuthModal(null);
+          toast.success(`Welcome back, ${data.name.split(' ')[0]}!`);
+          return;
+        }
+      }
+      const found = users[2];
       setCurrentUser(found);
       setAuthModal(null);
       toast.success(`Welcome back, ${found.name.split(' ')[0]}!`);
@@ -64,17 +77,32 @@ export function AppProvider({ children }) {
     [users]
   );
 
-  const signup = useCallback((name, email) => {
-    const newUser = {
+  const signup = useCallback(async (name, email) => {
+    const handle = (name || 'new_otaku').toLowerCase().replace(/\s+/g, '_');
+    const { data } = await supabase
+      .from('profiles')
+      .insert({
+        name: name || 'New Otaku',
+        handle,
+        email: email || 'new@kamistream.io',
+        phone: '—',
+        avatar: '/anime/cover-mecha.png',
+        role: 'free',
+        subscription: 'inactive',
+        joined: 'Just now',
+      })
+      .select()
+      .single();
+    const newUser = data || {
       id: `u${Date.now()}`,
       name: name || 'New Otaku',
-      handle: (name || 'new_otaku').toLowerCase().replace(/\s+/g, '_'),
+      handle,
       email,
       phone: '—',
       avatar: '/anime/cover-mecha.png',
       role: 'free',
       subscription: 'inactive',
-      joined: 'Just now'
+      joined: 'Just now',
     };
     setUsers((prev) => [newUser, ...prev]);
     setCurrentUser(newUser);
